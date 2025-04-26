@@ -1,13 +1,15 @@
-\"use client";
+"use client";
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button'; // Assuming Shadcn UI Button
-import { Input } from '@/components/ui/input';   // Assuming Shadcn UI Input
-import { Label } from '@/components/ui/label';   // Assuming Shadcn UI Label
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Assuming Shadcn UI Select
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"; // Import Card components
+import { User, Mail } from 'lucide-react'; // Import icons
 
-en// Define the Role enum matching the Prisma schema
+// Define the Role enum matching the Prisma schema
 enum Role {
   ADMIN = 'ADMIN',
   MANAGEMENT = 'MANAGEMENT',
@@ -47,7 +49,8 @@ export default function CreateUserPage() {
         throw new Error(data.error || 'Failed to create user');
       }
 
-      setSuccess(`User ${data.email} created successfully with temporary password.`);
+      // Display the temporary password received from the API
+      setSuccess(`User ${data.email} created successfully. Temporary Password: ${data.temporaryPassword}`);
       // Optionally clear the form
       setFirstName('');
       setLastName('');
@@ -64,61 +67,87 @@ export default function CreateUserPage() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-md">
-      <h1 className="text-2xl font-bold mb-6 text-center">Create New User</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="firstName">First Name</Label>
-          <Input
-            id="firstName"
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <Label htmlFor="lastName">Last Name</Label>
-          <Input
-            id="lastName"
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <Label htmlFor="role">Role</Label>
-          <Select value={role} onValueChange={(value) => setRole(value as Role)} required>
-            <SelectTrigger id="role">
-              <SelectValue placeholder="Select a role" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.values(Role).map((r) => (
-                <SelectItem key={r} value={r}>{r}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        {success && <p className="text-green-500 text-sm">{success}</p>}
-        <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? 'Creating...' : 'Create User'}
-        </Button>
-      </form>
-      <Button variant="outline" onClick={() => router.back()} className="mt-4 w-full">
-        Back to Dashboard
-      </Button>
+    <div className="container mx-auto flex items-center justify-center min-h-screen p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">Create New User</CardTitle>
+          <CardDescription className="text-center">Enter the details below to create a new user account.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <div className="relative">
+                  <User className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="firstName"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    className="pl-8"
+                    placeholder="John"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                 <div className="relative">
+                  <User className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="lastName"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                    className="pl-8"
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="pl-8"
+                  placeholder="john.doe@example.com"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="role">Role</Label>
+              <Select value={role} onValueChange={(value: string) => setRole(value as Role)} required>
+                <SelectTrigger id="role">
+                  <SelectValue placeholder="Select a role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(Role).map((r) => (
+                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {error && <p className="text-red-500 text-sm font-medium">Error: {error}</p>}
+            {success && <p className="text-green-600 text-sm font-medium">Success: {success}</p>}
+            <Button type="submit" disabled={isLoading} className="w-full">
+              {isLoading ? 'Creating...' : 'Create User'}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+           <Button variant="outline" onClick={() => router.back()} className="w-full">
+             Back to Dashboard
+           </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }

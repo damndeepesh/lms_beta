@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient, Role } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import crypto from 'crypto'; // For generating temporary password
 
 const prisma = new PrismaClient();
@@ -58,12 +58,12 @@ export async function POST(req: NextRequest) {
     // TODO: In a real application, you would email the temporary password to the user.
     // For now, we just return success.
 
-    // Return only non-sensitive data
+    // Return user data including the temporary password (FOR DEBUGGING ONLY)
     return NextResponse.json({ 
-        message: 'User created successfully. Temporary password generated.',
+        message: 'User created successfully.',
         userId: newUser.id,
-        email: newUser.email 
-        // DO NOT return the temporary password here in a real app
+        email: newUser.email, 
+        temporaryPassword: temporaryPassword // Include temporary password in response
     }, { status: 201 });
 
   } catch (error) {
