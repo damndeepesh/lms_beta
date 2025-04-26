@@ -40,6 +40,8 @@ export default function LoginForm() {
       // Handle successful login (e.g., redirect, store token)
       console.log('Login successful:', data);
 
+      console.log('[Login Page] Received role from API:', data.role); // Log received role
+
       // Check if password reset is required
       if (data.passwordResetRequired) {
         // Redirect to password reset page
@@ -47,6 +49,7 @@ export default function LoginForm() {
       } else {
         // Redirect to the appropriate dashboard based on role
         const { role } = data; // Assuming role is returned from API
+        console.log('[Login Page] Redirecting based on role:', role); // Log role before switch
         switch (role) {
           case 'ADMIN':
             router.push('/admin/dashboard');

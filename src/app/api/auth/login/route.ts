@@ -30,6 +30,8 @@ export async function POST(req: NextRequest) {
     // and return it to the client.
     // For now, we'll just return a success message along with user ID and reset status.
 
+    console.log(`[Login API] User role for ${email}: ${user.role}`); // Add logging here
+
     return NextResponse.json({
       message: 'Login successful',
       userId: user.id,

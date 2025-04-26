@@ -18,6 +18,7 @@ async function main() {
     create: {
       email: email,
       password: hashedPassword,
+      role: 'ADMIN', // Assign the ADMIN role
     },
   });
 
