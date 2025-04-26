@@ -9,7 +9,7 @@ import {
 } from "@tabler/icons-react";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // Ensure useRouter is imported
 
 export default function LoginForm() {
   const router = useRouter();
@@ -39,8 +39,39 @@ export default function LoginForm() {
 
       // Handle successful login (e.g., redirect, store token)
       console.log('Login successful:', data);
-      // Redirect to admin dashboard
-      router.push('/admin/dashboard');
+
+      // Check if password reset is required
+      if (data.passwordResetRequired) {
+        // Redirect to password reset page
+        router.push('/auth/reset-password'); 
+      } else {
+        // Redirect to the appropriate dashboard based on role
+        const { role } = data; // Assuming role is returned from API
+        switch (role) {
+          case 'ADMIN':
+            router.push('/admin/dashboard');
+            break;
+          case 'MANAGEMENT':
+            router.push('/management/dashboard'); // Example path
+            break;
+          case 'FINANCE':
+            router.push('/finance/dashboard'); // Example path
+            break;
+          case 'TEACHER':
+            router.push('/teacher/dashboard'); // Example path
+            break;
+          case 'STUDENT':
+            router.push('/student/dashboard'); // Example path
+            break;
+          default:
+            // Fallback or error handling if role is unexpected
+            console.error('Unknown user role:', role);
+            setError('Login successful, but could not determine dashboard.');
+            // Maybe redirect to a generic landing page or show error
+            router.push('/'); // Redirect to home as a fallback
+            break;
+        }
+      }
 
     } catch (err: any) {
       console.error('Login error:', err);

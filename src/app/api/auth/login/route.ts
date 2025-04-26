@@ -28,9 +28,14 @@ export async function POST(req: NextRequest) {
 
     // Here you would typically generate a session token (e.g., JWT)
     // and return it to the client.
-    // For now, we'll just return a success message.
+    // For now, we'll just return a success message along with user ID and reset status.
 
-    return NextResponse.json({ message: 'Login successful', userId: user.id }, { status: 200 });
+    return NextResponse.json({
+      message: 'Login successful',
+      userId: user.id,
+      role: user.role, // Return the user's role
+      passwordResetRequired: user.passwordResetRequired // Return the flag
+    }, { status: 200 });
 
   } catch (error) {
     console.error('Login error:', error);

@@ -14,9 +14,22 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  firstName     String?
+  lastName      String?
+  email         String   @unique
+  password      String
+  role          Role     @default(STUDENT) // Added Role enum and default
+  passwordResetRequired Boolean @default(false) // Flag to force password change
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// Define the Role enum
+enum Role {
+  ADMIN
+  MANAGEMENT
+  FINANCE
+  STUDENT
+  TEACHER
 }

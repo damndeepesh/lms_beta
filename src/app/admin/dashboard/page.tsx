@@ -3,6 +3,7 @@
 import React from 'react';
 import { CardStack } from "@/components/ui/card-stack";
 import { cn } from "@/utils/cn";
+import Link from 'next/link'; // Import Link
 
 // Define a simple Highlight component for demonstration
 const Highlight = ({ children, className }: { children: React.ReactNode; className?: string }) => {
@@ -48,20 +49,30 @@ export default function AdminDashboard() {
       designation: "Manager Project Mayhem",
       content: (
         <p>
-          The first rule of <Highlight>Fight Club</Highlight> is that you do not
-          talk about fight club. The second rule of Fight club is that you DO NOT
-          talk about fight club.
+          The first rule of Fight Club is <Highlight>you do not talk about</Highlight>
+          Fight Club. The second rule of Fight Club is you DO NOT talk about
+          Fight Club.
         </p>
       ),
     },
+    // Add the new User Management Card
+    {
+      id: 3, // Ensure unique ID
+      name: "User Management",
+      designation: "Admin Task",
+      content: (
+        <Link href="/admin/users/create" className="block w-full h-full">
+          <p>
+            Click here to <Highlight>add new users</Highlight> to the system and assign roles.
+          </p>
+        </Link>
+      ),
+    },
   ];
+
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-      <p>Welcome to the admin dashboard.</p>
-      <div className="h-[40rem] flex items-center justify-center w-full">
-        <CardStack items={CARDS} />
-      </div>
+    <div className="h-[40rem] flex items-center justify-center w-full">
+      <CardStack items={CARDS} />
     </div>
   );
 }
