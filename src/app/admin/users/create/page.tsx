@@ -67,8 +67,8 @@ export default function CreateUserPage() {
   };
 
   return (
-    <div className="container mx-auto flex items-center justify-center min-h-screen p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-indigo-100 to-blue-100 dark:from-gray-900 dark:via-slate-800 dark:to-gray-700 p-8 flex items-center justify-center">
+      <Card className="w-full max-w-md bg-white dark:bg-gray-800 shadow-xl rounded-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Create New User</CardTitle>
           <CardDescription className="text-center">Enter the details below to create a new user account.</CardDescription>
@@ -137,7 +137,7 @@ export default function CreateUserPage() {
             </div>
             {error && <p className="text-red-500 text-sm font-medium">Error: {error}</p>}
             {success && <p className="text-green-600 text-sm font-medium">Success: {success}</p>}
-            <Button type="submit" disabled={isLoading} className="w-full">
+            <Button type="submit" disabled={isLoading} className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white">
               {isLoading ? 'Creating...' : 'Create User'}
             </Button>
           </form>
