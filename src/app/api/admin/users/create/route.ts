@@ -14,8 +14,8 @@ function generateTemporaryPassword(length = 12): string {
 
 export async function POST(req: NextRequest) {
   try {
-    // Destructure batch along with other fields
-    const { firstName, lastName, email, role, batch } = await req.json();
+    // Destructure all fields from the request body
+    const { firstName, lastName, email, role, batch, studentId, department, phoneNumber, dateOfBirth } = await req.json();
 
     // Validate required fields
     if (!firstName || !lastName || !email || !role) {
@@ -52,18 +52,51 @@ export async function POST(req: NextRequest) {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(temporaryPassword, saltRounds);
 
+    // Prepare data for user creation, including optional fields
+    const userData: any = {
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      role: role as Role,
+      passwordResetRequired: true, // Force password reset on first login
+    };
+
+    // Conditionally add role-specific and optional fields
+    if (role === Role.STUDENT) {
+      if (batch !== undefined && batch !== null) {
+        userData.batch = parseInt(batch, 10);
+      }
+      if (studentId) {
+        userData.studentId = studentId;
+      }
+      if (department) {
+        userData.department = department;
+      }
+    } else if (role === Role.TEACHER) {
+        if (department) {
+            userData.department = department;
+        }
+    }
+
+    if (phoneNumber) {
+      userData.phoneNumber = phoneNumber;
+    }
+
+    if (dateOfBirth) {
+      // Ensure dateOfBirth is a valid date string or Date object before saving
+      try {
+        userData.dateOfBirth = new Date(dateOfBirth);
+      } catch (dateError) {
+        console.error('Invalid date format for dateOfBirth:', dateOfBirth);
+        // Handle invalid date format, maybe return an error response
+        return NextResponse.json({ error: 'Invalid date format for Date of Birth' }, { status: 400 });
+      }
+    }
+
     // Create the user in the database
     const newUser = await prisma.user.create({
-      data: {
-        firstName,
-        lastName,
-        email,
-        password: hashedPassword,
-        role: role as Role,
-        // Conditionally add batch only if role is STUDENT and batch is provided
-        ...(role === Role.STUDENT && batch !== undefined && batch !== null && { batch: parseInt(batch, 10) }),
-        passwordResetRequired: true, // Force password reset on first login
-      },
+      data: userData,
     });
 
     // TODO: In a real application, you would email the temporary password to the user.

@@ -21,6 +21,10 @@ model User {
   password      String
   role          Role     @default(STUDENT) // Added Role enum and default
   batch         Int?     // Optional batch year for students
+  studentId     String?  // Optional student ID
+  department    String?  // Optional department for students/teachers
+  phoneNumber   String?  // Optional phone number
+  dateOfBirth   DateTime? // Optional date of birth
   passwordResetRequired Boolean @default(false) // Flag to force password change
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
