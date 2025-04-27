@@ -1,17 +1,18 @@
 "use client";
 
 import React from 'react';
-import { Button } from '@/components/ui/button'; // Import Button
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, BookOpen, BarChart, LogOut } from 'lucide-react'; // Import icons
+import { Users, BookOpen, BarChart, LogOut } from 'lucide-react';
+import CreateUserModal, { Role as UserRole } from "@/components/CreateUserModal";
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const [showCreateUser, setShowCreateUser] = React.useState(false);
 
   const handleLogout = async () => {
-    // Redirect to the dedicated logout page which will handle the API call
     router.push('/logout');
   };
 
@@ -36,12 +37,9 @@ export default function AdminDashboard() {
               <CardDescription>Manage user accounts and roles.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Link href="/admin/users/create" passHref>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
-                  Add New User
-                </Button>
-              </Link>
-              {/* Add links to view/edit users later */}
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600" onClick={() => setShowCreateUser(true)}>
+                Add New User
+              </Button>
             </CardContent>
           </Card>
 
@@ -72,11 +70,11 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-500 dark:text-gray-400">Feature coming soon.</p>
             </CardContent>
           </Card>
-
-          {/* Add more placeholder cards as needed */}
-
         </div>
       </div>
+      {showCreateUser && (
+        <CreateUserModal open={showCreateUser} onClose={() => setShowCreateUser(false)} />
+      )}
     </div>
   );
 }
