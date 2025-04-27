@@ -1,44 +1,82 @@
 "use client";
 
 import React from 'react';
-import { CardStack } from "@/components/ui/card-stack";
-import { cn } from "@/utils/cn";
-import Link from 'next/link'; // Import Link
-
-// Define a simple Highlight component for demonstration
-const Highlight = ({ children, className }: { children: React.ReactNode; className?: string }) => {
-  return (
-    <span
-      className={cn(
-        "font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-700/[0.2] dark:text-emerald-500 px-1 py-0.5",
-        className
-      )}
-    >
-      {children}
-    </span>
-  );
-};
+import { Button } from '@/components/ui/button'; // Import Button
+import { useRouter } from 'next/navigation'; // Import useRouter
+import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users, BookOpen, BarChart, LogOut } from 'lucide-react'; // Import icons
 
 export default function AdminDashboard() {
-  const CARDS = [
-    // Keep only the User Management Card
-    {
-      id: 3, // Ensure unique ID
-      name: "User Management",
-      designation: "Admin Task",
-      content: (
-        <Link href="/admin/users/create" className="block w-full h-full">
-          <p>
-            Click here to <Highlight>add new users</Highlight> to the system and assign roles.
-          </p>
-        </Link>
-      ),
-    },
-  ];
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    // Redirect to the dedicated logout page which will handle the API call
+    router.push('/logout');
+  };
 
   return (
-    <div className="h-[40rem] flex items-center justify-center w-full">
-      <CardStack items={CARDS} />
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-indigo-100 to-blue-100 dark:from-gray-900 dark:via-slate-800 dark:to-gray-700 p-8">
+      <div className="container mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Admin Dashboard</h1>
+          <Button variant="outline" onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white dark:bg-red-600 dark:hover:bg-red-700">
+            <LogOut className="mr-2 h-4 w-4" /> Logout
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* User Management Card */}
+          <Card className="hover:shadow-lg transition-shadow duration-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                User Management
+              </CardTitle>
+              <CardDescription>Manage user accounts and roles.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/admin/users/create" passHref>
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
+                  Add New User
+                </Button>
+              </Link>
+              {/* Add links to view/edit users later */}
+            </CardContent>
+          </Card>
+
+          {/* Placeholder: Course Management */}
+          <Card className="opacity-70 hover:shadow-lg transition-shadow duration-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-green-600 dark:text-green-400" />
+                Course Management (Future)
+              </CardTitle>
+              <CardDescription>Create and manage courses.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Feature coming soon.</p>
+            </CardContent>
+          </Card>
+
+          {/* Placeholder: Student Progress */}
+          <Card className="opacity-70 hover:shadow-lg transition-shadow duration-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                Student Progress (Future)
+              </CardTitle>
+              <CardDescription>Track student performance.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Feature coming soon.</p>
+            </CardContent>
+          </Card>
+
+          {/* Add more placeholder cards as needed */}
+
+        </div>
+      </div>
     </div>
   );
 }
