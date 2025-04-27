@@ -14,11 +14,20 @@ function generateTemporaryPassword(length = 12): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const { firstName, lastName, email, role } = await req.json();
+    // Destructure batch along with other fields
+    const { firstName, lastName, email, role, batch } = await req.json();
 
-    // Validate input
+    // Validate required fields
     if (!firstName || !lastName || !email || !role) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Validate batch if role is STUDENT and batch is provided
+    if (role === Role.STUDENT && batch !== undefined && batch !== null) {
+      const batchYear = parseInt(batch, 10);
+      if (isNaN(batchYear) || batchYear < 1900 || batchYear > new Date().getFullYear() + 10) { // Basic year validation
+        return NextResponse.json({ error: 'Invalid batch year provided' }, { status: 400 });
+      }
     }
 
     // Check if user already exists
@@ -51,6 +60,8 @@ export async function POST(req: NextRequest) {
         email,
         password: hashedPassword,
         role: role as Role,
+        // Conditionally add batch only if role is STUDENT and batch is provided
+        ...(role === Role.STUDENT && batch !== undefined && batch !== null && { batch: parseInt(batch, 10) }),
         passwordResetRequired: true, // Force password reset on first login
       },
     });

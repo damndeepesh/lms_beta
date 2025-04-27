@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"; // Import Card components
-import { User, Mail } from 'lucide-react'; // Import icons
+import { User, Mail, Calendar } from 'lucide-react'; // Import icons (added Calendar for batch)
 
 // Define the Role enum matching the Prisma schema
 enum Role {
@@ -23,6 +23,7 @@ export default function CreateUserPage() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<Role>(Role.STUDENT); // Default role
+  const [batch, setBatch] = useState<string>(''); // State for batch year
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,12 +36,18 @@ export default function CreateUserPage() {
     setIsLoading(true);
 
     try {
+      // Include batch only if role is STUDENT and batch is provided
+      const requestBody: any = { firstName, lastName, email, role };
+      if (role === Role.STUDENT && batch) {
+        requestBody.batch = parseInt(batch, 10); // Ensure batch is sent as a number
+      }
+
       const response = await fetch('/api/admin/users/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ firstName, lastName, email, role }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
@@ -56,6 +63,7 @@ export default function CreateUserPage() {
       setLastName('');
       setEmail('');
       setRole(Role.STUDENT);
+      setBatch(''); // Clear batch field on success
       // Optionally redirect or show a persistent success message
       // router.push('/admin/dashboard');
 
@@ -135,6 +143,22 @@ export default function CreateUserPage() {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Conditionally render Batch input for STUDENT role */}
+            {role === Role.STUDENT && (
+              <div className="space-y-2">
+                <Label htmlFor="batch">Batch (Year)</Label>
+                <Input
+                  id="batch"
+                  type="number" // Use number input for year
+                  value={batch}
+                  onChange={(e) => setBatch(e.target.value)}
+                  placeholder="e.g., 2024"
+                  min="1900" // Optional: set a reasonable minimum year
+                  max={new Date().getFullYear() + 5} // Optional: set a reasonable maximum year
+                />
+              </div>
+            )}
             {error && <p className="text-red-500 text-sm font-medium">Error: {error}</p>}
             {success && <p className="text-green-600 text-sm font-medium">Success: {success}</p>}
             <Button type="submit" disabled={isLoading} className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white">
