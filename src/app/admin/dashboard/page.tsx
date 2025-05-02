@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -11,6 +11,16 @@ import CreateUserModal, { Role as UserRole } from "@/components/CreateUserModal"
 export default function AdminDashboard() {
   const router = useRouter();
   const [showCreateUser, setShowCreateUser] = React.useState(false);
+  const [userName, setUserName] = useState<string>('Admin'); // Default or loading state
+
+  useEffect(() => {
+    // Simulate fetching user name
+    const fetchUserName = async () => {
+      // Replace with actual fetch logic
+      setUserName('System Administrator'); 
+    };
+    fetchUserName();
+  }, []);
 
   const handleLogout = async () => {
     router.push('/logout');
@@ -20,7 +30,8 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-purple-100 via-indigo-100 to-blue-100 dark:from-gray-900 dark:via-slate-800 dark:to-gray-700 p-8">
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Welcome, {userName}!</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Admin Dashboard</p>
           <Button variant="outline" onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white dark:bg-red-600 dark:hover:bg-red-700">
             <LogOut className="mr-2 h-4 w-4" /> Logout
           </Button>
