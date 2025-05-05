@@ -23,8 +23,8 @@ const Logo = () => (
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('user@admin.com'); // Pre-filled example
-  const [password, setPassword] = useState('*********'); // Pre-filled example
+  const [email, setEmail] = useState('admin@admin.com'); // Pre-filled example
+  const [password, setPassword] = useState('admin@123'); // Pre-filled example
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

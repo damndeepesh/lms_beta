@@ -48,9 +48,16 @@ export default function AdminDashboard() {
               <CardDescription>Manage user accounts and roles.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600" onClick={() => setShowCreateUser(true)}>
-                Add New User
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600" onClick={() => setShowCreateUser(true)}>
+                  Add New User
+                </Button>
+                <Link href="/admin/users/view">
+                  <Button className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600" variant="outline">
+                    Manage Users
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
 

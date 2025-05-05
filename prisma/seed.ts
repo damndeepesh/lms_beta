@@ -18,7 +18,15 @@ async function main() {
     create: {
       email: email,
       password: hashedPassword,
-      role: 'ADMIN', // Assign the ADMIN role
+      role: 'ADMIN',
+      firstName: 'Admin',
+      lastName: 'User',
+      phoneNumber: '9999999999',
+      department: 'Administration',
+      batch: null,
+      studentId: null,
+      dateOfBirth: new Date('1990-01-01'),
+      passwordResetRequired: false
     },
   });
 
