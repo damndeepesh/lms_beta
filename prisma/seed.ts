@@ -24,7 +24,6 @@ async function main() {
       phoneNumber: '9999999999',
       department: 'Administration',
       batch: null,
-      studentId: null,
       dateOfBirth: new Date('1990-01-01'),
       passwordResetRequired: false
     },

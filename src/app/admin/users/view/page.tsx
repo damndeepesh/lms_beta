@@ -31,7 +31,12 @@ export default function ViewUsersPage() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-
+  // Moved batch modal and batch name hooks inside the component
+  const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
+  const [batchName, setBatchName] = useState("");
+  const [batchAssignLoading, setBatchAssignLoading] = useState(false);
+  const [batchAssignError, setBatchAssignError] = useState<string | null>(null);
+  const [batchAssignSuccess, setBatchAssignSuccess] = useState<string | null>(null);
   const filteredUsers = users.filter(
     (user) =>
       user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -198,6 +203,14 @@ export default function ViewUsersPage() {
       ),
     },
     {
+      key: "batch",
+      header: "Batch/Class",
+      className: "font-semibold",
+      render: (value: any, row: User) => (
+        <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 dark:bg-green-700">{(row as any).batch || "-"}</span>
+      ),
+    },
+    {
       key: "actions",
       header: <span className="text-right font-semibold">Actions</span>,
       className: "text-right font-semibold",
@@ -258,6 +271,14 @@ export default function ViewUsersPage() {
                 className="w-full md:w-1/3 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 aria-label="Search users"
               />
+              <Button
+                variant="outline"
+                className="bg-green-600 hover:bg-green-700 text-white dark:bg-green-500 dark:hover:bg-green-600 ml-2"
+                disabled={selectedUserIds.length === 0}
+                onClick={() => setIsBatchModalOpen(true)}
+              >
+                Assign to Batch/Class
+              </Button>
             </div>
             {apiState.error && renderError()}
             {apiState.loading ? renderLoading() : renderUserTable()}
@@ -272,6 +293,56 @@ export default function ViewUsersPage() {
           onClose={handleCloseModal}
           onUserUpdate={handleUserUpdate}
         />
+      )}
+      {/* Batch Assignment Modal */}
+      {isBatchModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold mb-2">Assign Selected Students to Batch/Class</h2>
+            <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">Enter a batch/class name to group the selected students. You can use this batch for future assignments.</p>
+            <input
+              type="text"
+              placeholder="Batch/Class Name"
+              value={batchName}
+              onChange={(e) => setBatchName(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+            />
+            {batchAssignError && <p className="text-red-500 text-sm">{batchAssignError}</p>}
+            {batchAssignSuccess && <p className="text-green-600 text-sm">{batchAssignSuccess}</p>}
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="secondary" onClick={() => { setIsBatchModalOpen(false); setBatchName(""); setBatchAssignError(null); setBatchAssignSuccess(null); }}>Cancel</Button>
+              <Button
+                className="bg-green-600 hover:bg-green-700 text-white"
+                disabled={!batchName || batchAssignLoading}
+                onClick={async () => {
+                  setBatchAssignLoading(true);
+                  setBatchAssignError(null);
+                  setBatchAssignSuccess(null);
+                  try {
+                    const res = await fetch("/api/admin/batch/assign", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ batchName, userIds: selectedUserIds }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || "Failed to assign batch");
+                    setBatchAssignSuccess("Batch assigned successfully!");
+                    setBatchName("");
+                    setIsBatchModalOpen(false);
+                    setSelectedUserIds([]);
+                    fetchUsers();
+                  } catch (err: any) {
+                    setBatchAssignError(err.message || "An error occurred");
+                  } finally {
+                    setBatchAssignLoading(false);
+                  }
+                }}
+              >
+                {batchAssignLoading ? "Assigning..." : "Assign"}
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
